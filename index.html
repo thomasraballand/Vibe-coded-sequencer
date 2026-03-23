@@ -46,6 +46,19 @@
             Clear
           </button>
         </div>
+        
+        <!-- Recording Controls -->
+        <div class="flex items-center gap-2 mb-4 w-full">
+          <button id="record-btn" class="flex-1 py-2 rounded bg-[#333] text-gray-300 font-mono text-xs hover:bg-[#444] transition-colors border border-[#444] flex items-center justify-center gap-2">
+            <div id="record-indicator" class="w-2 h-2 rounded-full bg-gray-500"></div>
+            <span id="record-text">ENREGISTRER</span>
+          </button>
+          <button id="download-btn" class="flex-1 py-2 rounded bg-[#222] text-gray-600 font-mono text-xs cursor-not-allowed border border-[#333] transition-colors flex items-center justify-center gap-2" disabled>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>TÉLÉCHARGER</span>
+          </button>
+        </div>
+
         <!-- Grid -->
         <div class="w-full pb-2">
           <div class="w-full flex flex-col gap-1 md:gap-2" id="grid-container">
