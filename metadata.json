@@ -1,0 +1,5 @@
+{
+  "name": "Step Sequencer",
+  "description": "A responsive, multitouch step sequencer with Web Audio API synthesis.",
+  "requestFramePermissions": []
+}
