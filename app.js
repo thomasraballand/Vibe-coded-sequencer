@@ -159,36 +159,34 @@ const gridContainer = document.getElementById('grid-container');
 
 // --- Initialization ---
 function initUI() {
-  // Build Grid Header
-  const headerRow = document.createElement('div');
-  headerRow.className = 'flex mb-2';
-  headerRow.innerHTML = `<div class="w-24 shrink-0"></div><div class="flex-1 grid grid-cols-[repeat(16,minmax(0,1fr))] gap-1 md:gap-2" id="step-numbers"></div>`;
-  gridContainer.appendChild(headerRow);
+  gridContainer.innerHTML = '';
   
-  const stepNumbers = document.getElementById('step-numbers');
+  const emptyCell = document.createElement('div');
+  emptyCell.className = 'grid-cell-empty';
+  gridContainer.appendChild(emptyCell);
+  
   for (let i = 0; i < NUM_STEPS; i++) {
     const num = document.createElement('div');
-    num.className = 'text-center text-[10px] font-mono text-gray-600';
+    num.className = 'grid-cell-step-num text-[10px] font-mono text-gray-600';
+    num.style.setProperty('--step', i);
     num.textContent = (i % 4 === 0) ? (i / 4) + 1 : '';
-    stepNumbers.appendChild(num);
+    gridContainer.appendChild(num);
   }
 
-  // Build Tracks
   for (let trackIdx = 0; trackIdx < NUM_TRACKS; trackIdx++) {
-    const trackRow = document.createElement('div');
-    trackRow.className = 'flex items-center gap-4';
-    
     const label = document.createElement('div');
-    label.className = 'w-20 shrink-0 text-right text-xs font-mono font-bold text-gray-400 tracking-wider';
+    label.className = 'grid-cell-track-label text-xs font-mono font-bold text-gray-400 tracking-wider';
+    label.style.setProperty('--track', trackIdx);
     label.textContent = INSTRUMENTS[trackIdx].name;
-    trackRow.appendChild(label);
-    
-    const stepsContainer = document.createElement('div');
-    stepsContainer.className = 'flex-1 grid grid-cols-[repeat(16,minmax(0,1fr))] gap-1 md:gap-2';
-    
+    gridContainer.appendChild(label);
+  }
+  
+  for (let trackIdx = 0; trackIdx < NUM_TRACKS; trackIdx++) {
     for (let stepIdx = 0; stepIdx < NUM_STEPS; stepIdx++) {
       const btn = document.createElement('div');
-      btn.className = `aspect-square rounded-sm step-btn ${stepIdx % 4 === 0 ? 'beat-start' : ''}`;
+      btn.className = `aspect-square rounded-sm step-btn ${stepIdx % 4 === 0 ? 'beat-start' : ''} grid-cell-btn`;
+      btn.style.setProperty('--track', trackIdx);
+      btn.style.setProperty('--step', stepIdx);
       btn.dataset.track = trackIdx;
       btn.dataset.step = stepIdx;
       
@@ -206,11 +204,8 @@ function initUI() {
         }
       });
       
-      stepsContainer.appendChild(btn);
+      gridContainer.appendChild(btn);
     }
-    
-    trackRow.appendChild(stepsContainer);
-    gridContainer.appendChild(trackRow);
   }
 }
 
@@ -228,7 +223,7 @@ function updateGridUI() {
     const isCurrent = uiStep === s;
     const isBeatStart = s % 4 === 0;
     
-    btn.className = 'aspect-square rounded-sm step-btn';
+    btn.className = `aspect-square rounded-sm step-btn grid-cell-btn`;
     if (isActive) btn.classList.add('active');
     if (isCurrent) btn.classList.add('current');
     if (isBeatStart && !isActive && !isCurrent) btn.classList.add('beat-start');
