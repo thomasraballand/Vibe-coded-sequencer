@@ -9,13 +9,88 @@ import { Play, Square, Trash2 } from 'lucide-react';
 // --- Audio Engine ---
 let audioCtx: AudioContext | null = null;
 let masterGain: GainNode | null = null;
+let distortionNode: WaveShaperNode | null = null;
+let muffleNode: BiquadFilterNode | null = null;
+let convolverNode: ConvolverNode | null = null;
+let reverbWetGain: GainNode | null = null;
+let reverbDryGain: GainNode | null = null;
+
+function createReverbIR(ctx: AudioContext, duration: number, decay: number) {
+  const sampleRate = ctx.sampleRate;
+  const length = sampleRate * duration;
+  const impulse = ctx.createBuffer(2, length, sampleRate);
+  const left = impulse.getChannelData(0);
+  const right = impulse.getChannelData(1);
+  for (let i = 0; i < length; i++) {
+    const n = 1 - i / length;
+    left[i] = (Math.random() * 2 - 1) * Math.pow(n, decay);
+    right[i] = (Math.random() * 2 - 1) * Math.pow(n, decay);
+  }
+  return impulse;
+}
+
+function makeDistortionCurve(amount: number) {
+  const k = typeof amount === 'number' ? amount : 50;
+  const n_samples = 44100;
+  const curve = new Float32Array(n_samples);
+  const deg = Math.PI / 180;
+  for (let i = 0; i < n_samples; ++i) {
+    const x = (i * 2) / n_samples - 1;
+    curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+  }
+  return curve;
+}
+
+const updateEffects = (dist: number, rev: number, muf: number) => {
+  if (!audioCtx) return;
+  
+  if (distortionNode) {
+    distortionNode.curve = dist === 0 ? null : makeDistortionCurve(dist * 4);
+  }
+
+  if (muffleNode) {
+    const minFreq = 300;
+    const maxFreq = 20000;
+    const freq = maxFreq * Math.pow(minFreq / maxFreq, muf / 100);
+    muffleNode.frequency.setTargetAtTime(freq, audioCtx.currentTime, 0.1);
+  }
+
+  if (reverbWetGain && reverbDryGain) {
+    const wet = rev / 100;
+    reverbWetGain.gain.setTargetAtTime(wet, audioCtx.currentTime, 0.1);
+    reverbDryGain.gain.setTargetAtTime(1 - (wet * 0.5), audioCtx.currentTime, 0.1);
+  }
+};
 
 const initAudio = () => {
   if (!audioCtx) {
     const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
     audioCtx = new AudioContextClass();
     masterGain = audioCtx.createGain();
-    masterGain.connect(audioCtx.destination);
+    
+    distortionNode = audioCtx.createWaveShaper();
+    distortionNode.oversample = '4x';
+    
+    muffleNode = audioCtx.createBiquadFilter();
+    muffleNode.type = 'lowpass';
+    
+    convolverNode = audioCtx.createConvolver();
+    convolverNode.buffer = createReverbIR(audioCtx, 2, 2);
+    
+    reverbWetGain = audioCtx.createGain();
+    reverbDryGain = audioCtx.createGain();
+
+    // Routing: master -> dist -> muffle -> (dry & wet reverb) -> destination
+    masterGain.connect(distortionNode);
+    distortionNode.connect(muffleNode);
+    
+    muffleNode.connect(reverbDryGain);
+    reverbDryGain.connect(audioCtx.destination);
+    
+    muffleNode.connect(convolverNode);
+    convolverNode.connect(reverbWetGain);
+    reverbWetGain.connect(audioCtx.destination);
+
     masterGain.gain.value = 0.8;
   }
   if (audioCtx.state === 'suspended') {
@@ -151,6 +226,9 @@ export default function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [bpm, setBpm] = useState<number | ''>(120);
   const [currentStep, setCurrentStep] = useState(-1);
+  const [distortion, setDistortion] = useState(0);
+  const [reverb, setReverb] = useState(0);
+  const [muffle, setMuffle] = useState(0);
   
   const isPlayingRef = useRef(isPlaying);
   const bpmRef = useRef(bpm);
@@ -167,6 +245,10 @@ export default function App() {
     bpmRef.current = typeof bpm === 'number' ? bpm : 120;
     gridRef.current = grid;
   }, [isPlaying, bpm, grid]);
+
+  useEffect(() => {
+    updateEffects(distortion, reverb, muffle);
+  }, [distortion, reverb, muffle]);
 
   const scheduleNote = useCallback((stepNumber: number, time: number) => {
     requestAnimationFrame(() => {
@@ -331,6 +413,46 @@ export default function App() {
             <Trash2 size={16} />
             Clear
           </button>
+        </div>
+
+        {/* Effects Section */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-6 border-b border-white/10">
+          <div className="flex flex-col gap-2">
+            <div className="flex justify-between text-xs font-mono text-gray-500 uppercase">
+              <span>Distortion</span>
+              <span className="text-[var(--accent)]">{distortion}%</span>
+            </div>
+            <input 
+              type="range" min="0" max="100" 
+              value={distortion} 
+              onChange={(e) => { initAudio(); setDistortion(Number(e.target.value)); }} 
+              className="w-full"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <div className="flex justify-between text-xs font-mono text-gray-500 uppercase">
+              <span>Reverb</span>
+              <span className="text-[var(--accent)]">{reverb}%</span>
+            </div>
+            <input 
+              type="range" min="0" max="100" 
+              value={reverb} 
+              onChange={(e) => { initAudio(); setReverb(Number(e.target.value)); }} 
+              className="w-full"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <div className="flex justify-between text-xs font-mono text-gray-500 uppercase">
+              <span>Muffle</span>
+              <span className="text-[var(--accent)]">{muffle}%</span>
+            </div>
+            <input 
+              type="range" min="0" max="100" 
+              value={muffle} 
+              onChange={(e) => { initAudio(); setMuffle(Number(e.target.value)); }} 
+              className="w-full"
+            />
+          </div>
         </div>
 
         {/* Grid */}

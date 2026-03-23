@@ -1,10 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
-@import "tailwindcss";
-
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-}
 
 :root {
   --bg-color: #121212;
@@ -22,10 +16,14 @@
 body {
   background-color: var(--bg-color);
   color: var(--text-primary);
-  font-family: var(--font-sans);
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
   overflow-x: hidden;
   user-select: none;
   -webkit-user-select: none;
+}
+
+.font-mono {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace !important;
 }
 
 .hardware-panel {
@@ -39,7 +37,6 @@ body {
   background-color: #0a0a0a;
   border: 1px inset #333;
   color: var(--accent);
-  font-family: var(--font-mono);
   text-shadow: 0 0 8px var(--accent-glow);
   box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
 }
@@ -49,12 +46,18 @@ body {
   border: 1px solid rgba(0,0,0,0.8);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
   transition: background-color 0.05s, box-shadow 0.05s;
-  touch-action: none; /* Crucial for swipe drawing on mobile */
+  touch-action: none;
   cursor: pointer;
 }
 
 .step-btn.beat-start {
   background-color: var(--step-beat);
+}
+
+.step-btn.active {
+  background-color: var(--step-on);
+  box-shadow: 0 0 12px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.3);
+  border-color: rgba(242, 125, 38, 0.5);
 }
 
 .step-btn.current {
@@ -63,40 +66,11 @@ body {
   border-color: #fff;
 }
 
-.step-btn[data-velocity="1"] {
-  background-color: rgba(242, 125, 38, 0.25);
-  box-shadow: 0 0 8px rgba(242, 125, 38, 0.15), inset 0 1px 0 rgba(255,255,255,0.1);
-  border-color: rgba(242, 125, 38, 0.3);
-}
-
-.step-btn[data-velocity="2"] {
-  background-color: rgba(242, 125, 38, 0.6);
-  box-shadow: 0 0 12px rgba(242, 125, 38, 0.3), inset 0 1px 0 rgba(255,255,255,0.2);
-  border-color: rgba(242, 125, 38, 0.5);
-}
-
-.step-btn[data-velocity="3"] {
-  background-color: rgba(242, 125, 38, 1);
-  box-shadow: 0 0 16px rgba(242, 125, 38, 0.5), inset 0 1px 0 rgba(255,255,255,0.3);
-  border-color: rgba(242, 125, 38, 0.7);
-}
-
-.step-btn[data-velocity="1"].current {
+.step-btn.active.current {
   background-color: #fff;
-  box-shadow: 0 0 12px rgba(242, 125, 38, 0.3), 0 0 8px #fff;
+  box-shadow: 0 0 20px var(--accent-glow), 0 0 10px #fff;
 }
 
-.step-btn[data-velocity="2"].current {
-  background-color: #fff;
-  box-shadow: 0 0 16px rgba(242, 125, 38, 0.5), 0 0 12px #fff;
-}
-
-.step-btn[data-velocity="3"].current {
-  background-color: #fff;
-  box-shadow: 0 0 24px rgba(242, 125, 38, 0.8), 0 0 16px #fff;
-}
-
-/* Hide number input arrows */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
@@ -106,7 +80,6 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
-/* Custom Range Slider */
 input[type=range] {
   -webkit-appearance: none;
   appearance: none;
