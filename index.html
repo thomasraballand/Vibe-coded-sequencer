@@ -9,43 +9,85 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <div class="min-h-screen flex flex-col items-center justify-center p-4 md:p-8">
-      <div class="w-full max-w-5xl hardware-panel p-6 md:p-8 flex flex-col gap-8">
+    <div class="min-h-screen flex flex-col items-center justify-start sm:justify-center sm:p-4 md:p-8">
+      <div class="w-full max-w-5xl hardware-panel px-3 py-6 sm:p-6 md:p-8 flex flex-col gap-4 md:gap-8">
         <!-- Header -->
-        <div class="flex flex-col md:flex-row items-center justify-between gap-6 pb-6 border-b border-white/10">
-          <div class="flex items-center gap-6 w-full md:w-auto justify-between md:justify-start">
-            <button id="play-btn" class="w-14 h-14 shrink-0 rounded-full flex items-center justify-center transition-all bg-[#333] text-gray-300 hover:bg-[#444]">
-              <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>
-              <svg id="stop-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect></svg>
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6 pb-4 md:pb-6 border-b border-white/10">
+          
+          <!-- Top row on mobile: Play, Tempo, Clear -->
+          <div class="flex items-center justify-between px-2 sm:px-0 w-full md:w-auto md:justify-start md:gap-6 order-1">
+            <button id="play-btn" class="w-12 h-12 md:w-14 md:h-14 shrink-0 rounded-full flex items-center justify-center transition-all bg-[#333] text-gray-300 hover:bg-[#444]">
+              <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1 md:w-6 md:h-6"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>
+              <svg id="stop-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden md:w-6 md:h-6"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect></svg>
             </button>
-            <div class="lcd-screen px-4 py-2 rounded flex flex-col items-center min-w-[100px]">
-              <span class="text-[10px] text-gray-500 uppercase tracking-widest mb-1 font-mono">Tempo</span>
-              <input id="bpm-input" type="number" min="60" max="200" value="120" class="text-2xl font-bold bg-transparent border-none text-center w-full outline-none text-[var(--accent)] p-0 m-0 font-mono" />
+            
+            <div class="lcd-screen px-3 py-1 md:px-4 md:py-2 rounded flex flex-col items-center min-w-[80px] md:min-w-[100px]">
+              <span class="text-[9px] md:text-[10px] text-gray-500 uppercase tracking-widest mb-1 font-mono">Tempo</span>
+              <input id="bpm-input" type="number" min="60" max="200" value="120" class="text-xl md:text-2xl font-bold bg-transparent border-none text-center w-full outline-none text-[var(--accent)] p-0 m-0 font-mono" />
             </div>
+
+            <!-- Clear button on mobile -->
+            <button class="clear-btn md:hidden w-11 h-11 shrink-0 flex items-center justify-center rounded bg-[#333] hover:bg-[#444] text-gray-300 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            </button>
           </div>
-          <div class="flex-1 w-full max-w-xs flex flex-col gap-2">
+
+          <!-- Slider -->
+          <div class="flex-1 w-full max-w-xs flex flex-col gap-2 order-2">
             <div class="flex justify-between text-xs font-mono text-gray-500">
               <span>60</span><span>BPM</span><span>200</span>
             </div>
             <input id="bpm-slider" type="range" min="60" max="200" value="120" class="w-full" />
           </div>
-          <button id="clear-btn" class="flex items-center justify-center gap-2 px-4 py-3 md:py-2 w-full md:w-auto rounded bg-[#333] hover:bg-[#444] text-gray-300 transition-colors text-sm font-mono uppercase tracking-wider">
+
+          <!-- Clear button on desktop -->
+          <button class="clear-btn hidden md:flex items-center justify-center gap-2 px-4 py-2 rounded bg-[#333] hover:bg-[#444] text-gray-300 transition-colors text-sm font-mono uppercase tracking-wider order-3">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
             Clear
           </button>
         </div>
         <!-- Grid -->
-        <div class="overflow-auto pb-4 -mx-4 px-4 md:mx-0 md:px-0 max-h-[65vh] md:max-h-none">
-          <div id="grid-container" class="gap-1 md:gap-2">
+        <div class="w-full pb-2">
+          <div class="w-full flex flex-col gap-1 md:gap-2" id="grid-container">
             <!-- Generated by JS -->
           </div>
         </div>
-      </div>
-      <div class="mt-8 text-center max-w-md px-4">
-        <p class="text-xs text-gray-500 font-mono leading-relaxed">
-          Tap to toggle steps. Swipe to draw multiple steps.<br/>
-          Built with Web Audio API & Vanilla JS.
-        </p>
+
+        <!-- Track Settings Panel -->
+        <div id="track-settings-panel" class="hidden mt-2 pt-4 border-t border-white/10 flex flex-col gap-4">
+          <div class="flex items-center justify-between">
+            <h3 id="selected-track-name" class="text-emerald-400 font-mono text-sm uppercase tracking-widest">KICK SETTINGS</h3>
+            <button id="close-settings-btn" class="text-gray-500 hover:text-white transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <!-- Volume -->
+            <div class="flex flex-col gap-2">
+              <div class="flex justify-between text-xs font-mono text-gray-500">
+                <span>VOL</span><span id="vol-val">80%</span>
+              </div>
+              <input id="vol-slider" type="range" min="0" max="100" value="80" class="w-full accent-emerald-400" />
+            </div>
+            <!-- Filter -->
+            <div class="flex flex-col gap-2">
+              <div class="flex justify-between text-xs font-mono text-gray-500">
+                <span>FILTER</span><span id="filter-val">OFF</span>
+              </div>
+              <input id="filter-slider" type="range" min="0" max="100" value="50" class="w-full accent-emerald-400" />
+              <div class="flex justify-between text-[9px] font-mono text-gray-600">
+                <span>LP</span><span>OFF</span><span>HP</span>
+              </div>
+            </div>
+            <!-- Bitcrush -->
+            <div class="flex flex-col gap-2">
+              <div class="flex justify-between text-xs font-mono text-gray-500">
+                <span>CRUSH</span><span id="crush-val">0%</span>
+              </div>
+              <input id="crush-slider" type="range" min="0" max="100" value="0" class="w-full accent-emerald-400" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <script src="app.js"></script>

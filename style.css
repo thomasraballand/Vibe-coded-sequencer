@@ -14,7 +14,7 @@
 }
 
 body {
-  background-color: var(--bg-color);
+  background-color: var(--card-bg);
   color: var(--text-primary);
   font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
   overflow-x: hidden;
@@ -22,15 +22,20 @@ body {
   -webkit-user-select: none;
 }
 
-.font-mono {
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace !important;
+@media (min-width: 1024px) {
+  body {
+    background-color: var(--bg-color);
+  }
+  .hardware-panel {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.05);
+  }
 }
 
-.hardware-panel {
-  background-color: var(--card-bg);
-  border-radius: 12px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.05);
+.font-mono {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace !important;
 }
 
 .lcd-screen {
@@ -104,68 +109,4 @@ input[type=range]::-webkit-slider-runnable-track {
   border-radius: 2px;
   border: 1px solid #333;
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
-}
-
-#grid-container {
-  display: grid;
-  grid-template-columns: 24px repeat(6, minmax(0, 1fr));
-  grid-auto-rows: max-content;
-}
-@media (min-width: 768px) {
-  #grid-container {
-    grid-template-columns: 80px repeat(16, minmax(0, 1fr));
-  }
-}
-
-.grid-cell-empty {
-  grid-column: 1;
-  grid-row: 1;
-}
-
-.grid-cell-step-num {
-  grid-column: 1;
-  grid-row: calc(var(--step) + 2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-@media (min-width: 768px) {
-  .grid-cell-step-num {
-    grid-column: calc(var(--step) + 2);
-    grid-row: 1;
-  }
-}
-
-.grid-cell-track-label {
-  grid-column: calc(var(--track) + 2);
-  grid-row: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  height: 90px;
-}
-@media (min-width: 768px) {
-  .grid-cell-track-label {
-    grid-column: 1;
-    grid-row: calc(var(--track) + 2);
-    justify-content: flex-end;
-    padding-right: 1rem;
-    writing-mode: horizontal-tb;
-    transform: none;
-    height: auto;
-  }
-}
-
-.grid-cell-btn {
-  grid-column: calc(var(--track) + 2);
-  grid-row: calc(var(--step) + 2);
-}
-@media (min-width: 768px) {
-  .grid-cell-btn {
-    grid-column: calc(var(--step) + 2);
-    grid-row: calc(var(--track) + 2);
-  }
 }
